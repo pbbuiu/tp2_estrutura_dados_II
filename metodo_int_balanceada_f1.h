@@ -1,9 +1,13 @@
-#ifndef INT_BALANCEADA_FPLUSONE_H
-#define INT_BALANCEADA_FPLUSONE_H
+#ifndef METODO_INT_BALANCEADA_F1_H
+#define METODO_INT_BALANCEADA_F1_H
 
+#include "base.h"
+#include <stdio.h>
 
+void realizaIntercalacaoBalanceadaf1(Analise *a, FILE *arqProvao, int quantidade);
 
-#endif //INTERCALACAO_BALANCEADA_F+1_H
+#endif //INTERCALACAO_BALANCEADA_2F_H
+
 
 /*
 Para o método 2, deve ser considerada a existência de

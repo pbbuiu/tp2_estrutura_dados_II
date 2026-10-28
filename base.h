@@ -22,11 +22,6 @@ typedef struct analise{
     double tempoTotal;
 } Analise;
 
-void inicializaAnalise(Analise *a){
-    a->comparacoes = 0;
-    a->transferenciasLeituras = 0;
-    a->transferenciasEscritas = 0;
-    a->tempoTotal = 0;
-}
+void inicializaAnalise(Analise *a);
 
 #endif //BASE_H

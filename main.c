@@ -1,12 +1,14 @@
-#include "intercalacao_balanceada_TwoF.h"
-#include "int_balanceada_FPlusOne.h"
-#include "quicksort.h"
+#include "metodo_int_balanceada_2f.h"
+#include "metodo_int_balanceada_f1.h"
+#include "metodo_quicksort.h"
 #include "base.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
+
+FILE * transformaBin(FILE *arqProvao);
 
 int main(int argc, char *argv[]){
     //Verificação de comandos no console
@@ -22,29 +24,41 @@ int main(int argc, char *argv[]){
     if (*check != '\0') {printf("Quantidade invalida\n"); return 1;}
 
     char situacao[30];
-    if      (strtol(argv[3], &check, 10) == 1)  strcpy(situacao, "Provao_crescente.bin");  //Crescente
-    else if (strtol(argv[3], &check, 10) == 2)  strcpy(situacao, "Provao_decrescente.bin");//Decrescente
-    else                                        strcpy(situacao, "Provao_aleatorio.bin");  //Aleatorio
+    if      (strtol(argv[3], &check, 10) == 1)  strcpy(situacao, "Provao_crescente.txt");  //Crescente
+    else if (strtol(argv[3], &check, 10) == 2)  strcpy(situacao, "Provao_decrescente.txt");//Decrescente
+    else                                        strcpy(situacao, "Provao_aleatorio.txt");  //Aleatorio
     if (*check != '\0') return 1;
 
     if (argc == 6) opt = true;
 
-    FILE *arqProvao = fopen("PROVAO.TXT", "r");
+    FILE *arqProvao = fopen(situacao, "r");
     if (!arqProvao) {printf("Leitura do arquivo (PROVAO.TXT) falhou\n"); return 1;}
+
+    FILE *arqProvaoBin = transformaBin(arqProvao);
+    if (!arqProvaoBin) {printf("Não foi possivel transformar o arquivo em bin\n"); return 1;}
+
+    
 
     Analise a;
     inicializaAnalise(&a);
 
     if (metodo == 1){
-        // realizaIntercalacaoBalanceadaTwoF(&a, arqProvao, quantidade);
+        realizaIntercalacaoBalanceada2f(&a, arqProvaoBin, quantidade);
     }
     if (metodo == 2){
-        // realizaIntercalacaoBalanceadaFPlusOne(&a, arqProvao, quantidade);
+        realizaIntercalacaoBalanceadaf1(&a, arqProvaoBin, quantidade);
     }
     if (metodo == 3){
-        // realizaQuicksort(&a, arqProvao, quantidade);
+        realizaQuicksort(&a, arqProvaoBin, quantidade);
     }
 
-    if (opt) printf("%d\n", quantidade);
+    if (opt) printf("%d\n", quantidade); //Apenas para não acusar erro de 
+    fclose(arqProvaoBin);
     return 0;
+}
+
+FILE * transformaBin(FILE *arqProvao){
+
+    fclose(arqProvao);
+    return NULL;
 }

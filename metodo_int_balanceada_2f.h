@@ -1,10 +1,13 @@
-#ifndef INT_BALANCEADA_TWOF_H
-#define INT_BALANCEADA_TWOF_H
+#ifndef METODO_INT_BALANCEADA_2F_H
+#define METODO_INT_BALANCEADA_2F_H
+
+#include "base.h"
+#include <stdio.h>
+
+void realizaIntercalacaoBalanceada2f(Analise *a, FILE * arqProvao, int quantidade);
 
 
-
-
-#endif //INTERCALACAO_BALANCEADA_2F_H
+#endif //INTERCALACAO_BALANCEADA_F+1_H
 
 /*
 Para o método 1, deve ser considerada a existência de (a) memória interna disponível para armazenar um

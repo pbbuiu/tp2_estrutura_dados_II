@@ -1,5 +1,10 @@
-#ifndef QUICKSORT_H
-#define QUICKSORT_H
+#ifndef METODO_QUICKSORT_H
+#define METODO_QUICKSORT_H
+
+#include "base.h"
+#include <stdio.h>
+
+void realizaQuicksort(Analise *a, FILE *arqProvao, int quantidade);
 
 #endif //QUICKSORT_H
 
