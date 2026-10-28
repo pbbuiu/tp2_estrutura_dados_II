@@ -4,7 +4,7 @@
 #include "base.h"
 #include <stdio.h>
 
-void realizaQuicksort(Analise *a, FILE *arqProvao, int quantidade);
+void realizaQuicksort(Analise *a, char *nomeArquivo, int quantidade);
 
 #endif //QUICKSORT_H
 
