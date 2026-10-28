@@ -8,7 +8,7 @@
 #include <stdbool.h>
 #include <string.h>
 
-FILE * transformaBin(FILE *arqProvao);
+FILE * transformaBin(FILE *arqProvao, char *nomeArqProvaoBin);
 
 int main(int argc, char *argv[]){
     //Verificação de comandos no console
@@ -34,7 +34,8 @@ int main(int argc, char *argv[]){
     FILE *arqProvao = fopen(situacao, "r");
     if (!arqProvao) {printf("Leitura do arquivo (PROVAO.TXT) falhou\n"); return 1;}
 
-    FILE *arqProvaoBin = transformaBin(arqProvao);
+    char *nomeArqProvaBin = NULL;
+    FILE *arqProvaoBin = transformaBin(arqProvao, nomeArqProvaBin);
     if (!arqProvaoBin) {printf("Não foi possivel transformar o arquivo em bin\n"); return 1;}
 
     
@@ -49,7 +50,7 @@ int main(int argc, char *argv[]){
         realizaIntercalacaoBalanceadaf1(&a, arqProvaoBin, quantidade);
     }
     if (metodo == 3){
-        realizaQuicksort(&a, arqProvaoBin, quantidade);
+        realizaQuicksort(&a, nomeArqProvaBin, quantidade);
     }
 
     if (opt) printf("%d\n", quantidade); //Apenas para não acusar erro de 
@@ -57,7 +58,7 @@ int main(int argc, char *argv[]){
     return 0;
 }
 
-FILE * transformaBin(FILE *arqProvao){
+FILE * transformaBin(FILE *arqProvao, char *nomeArqProvaoBin){
 
     fclose(arqProvao);
     return NULL;
