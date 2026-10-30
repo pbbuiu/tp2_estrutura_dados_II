@@ -11,6 +11,7 @@
 FILE * transformaBin(FILE *arqProvao, char *nomeArqProvaoBin);
 
 int main(int argc, char *argv[]){
+    double tempoDeExecucao;
     //Verificação de comandos no console
     char *check;
 
@@ -40,20 +41,30 @@ int main(int argc, char *argv[]){
 
     
 
-    Analise a;
-    inicializaAnalise(&a);
+    Analise analisador;
+    inicializaAnalise(&analisador);
 
     if (metodo == 1){
-        realizaIntercalacaoBalanceada2f(&a, arqProvaoBin, quantidade);
+        realizaIntercalacaoBalanceada2f(&analisador, arqProvaoBin, quantidade, opt);
+        printf("======== Intercalacao Balanceada 2f ========\n\n");
     }
     if (metodo == 2){
-        realizaIntercalacaoBalanceadaf1(&a, arqProvaoBin, quantidade);
+        realizaIntercalacaoBalanceadaf1(&analisador, arqProvaoBin, quantidade, opt);
+        printf("======== Intercalacao Balanceada f + 1 ========\n\n");
     }
     if (metodo == 3){
-        realizaQuicksort(&a, nomeArqProvaBin, quantidade);
+        realizaQuicksort(&analisador, nomeArqProvaBin, quantidade, opt);
+        printf("======== QuickSort ========\n\n");
     }
 
-    if (opt) printf("%d\n", quantidade); //Apenas para não acusar erro de 
+    tempoDeExecucao = (analisador.fim.tv_sec - analisador.inicio.tv_sec) + (analisador.fim.tv_nsec - analisador.inicio.tv_nsec)/ 1e9; //Tempo total de execução do método escolhido
+    
+    //Analise dos métodos
+    printf("- Tempo de execucao: %.9f\n", tempoDeExecucao);
+    printf("- Numero de comparacoes: %ld\n", analisador.comparacoes);
+    printf("- Numero de transferencias (Leitura): %ld\n", analisador.transferenciasLeituras);
+    printf("- Numero de comparacoes (Escritas): %ld\n", analisador.transferenciasEscritas);
+
     fclose(arqProvaoBin);
     return 0;
 }

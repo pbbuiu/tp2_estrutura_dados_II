@@ -19,7 +19,6 @@ typedef struct analise{
     long int comparacoes;
     struct timespec inicio;
     struct timespec fim;
-    double tempoTotal;
 } Analise;
 
 void inicializaAnalise(Analise *a);
