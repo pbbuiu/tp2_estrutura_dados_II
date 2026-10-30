@@ -27,7 +27,7 @@ void escreveMin(Aluno *escrito, FILE **arqEi, int *Ei, Analise *analisador);
 void escreveMax(Aluno *escrito, FILE **arqEs, int *Es, Analise *analisador);
 
 //Função chamada pela main para realização da ordenação aplicando o método do QuickSort
-void realizaQuicksort(Analise *analisador, char *nomeArquivo, int quantidade){
+void realizaQuicksort(Analise *analisador, char *nomeArquivo, int quantidade, bool opt){
     //Gera os ponteiros que irão se locomover através dos arquivos
     clock_gettime(CLOCK_MONOTONIC, &analisador->inicio); //Tempo de início
 
@@ -42,7 +42,6 @@ void realizaQuicksort(Analise *analisador, char *nomeArquivo, int quantidade){
     fclose(LEs);
 
     clock_gettime(CLOCK_MONOTONIC, &analisador->fim); //Tempo de fim
-    analisador->tempoTotal = (analisador->fim.tv_sec - analisador->inicio.tv_sec) + (analisador->fim.tv_nsec - analisador->inicio.tv_nsec)/ 1e9; //Tempo total de execução do método
 }
 
 //Realiza a partição dos arquivos e faz a recursivade com os sub-arquivos acontecer

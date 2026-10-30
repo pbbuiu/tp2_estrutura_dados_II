@@ -3,8 +3,9 @@
 
 #include "base.h"
 #include <stdio.h>
+#include <stdbool.h>
 
-void realizaQuicksort(Analise *a, char *nomeArquivo, int quantidade);
+void realizaQuicksort(Analise *a, char *nomeArquivo, int quantidade, bool opt);
 
 #endif //QUICKSORT_H
 

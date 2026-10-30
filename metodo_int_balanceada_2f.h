@@ -3,8 +3,9 @@
 
 #include "base.h"
 #include <stdio.h>
+#include <stdbool.h>
 
-void realizaIntercalacaoBalanceada2f(Analise *a, FILE * arqProvao, int quantidade);
+void realizaIntercalacaoBalanceada2f(Analise *a, FILE * arqProvao, int quantidade, bool opt);
 
 
 #endif //INTERCALACAO_BALANCEADA_F+1_H
