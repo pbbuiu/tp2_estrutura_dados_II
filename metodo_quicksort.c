@@ -156,6 +156,7 @@ void LeInf(FILE **arqLi, Aluno *ultLido, int *Li, bool *ondeLer, Analise *analis
 void inserirArea(Aluno *ultLido, TipoArea *area){
     int i = area->numAlunosArea;
     while (i > 0 && area->alunos[i-1].nota > ultLido->nota){
+        //colocar as comparações aqui
         area->alunos[i] = area->alunos[i-1];
         i--;
     }

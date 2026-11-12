@@ -25,35 +25,29 @@ int main(int argc, char *argv[]){
     if (*check != '\0') {printf("Quantidade invalida\n"); return 1;}
 
     char situacao[30];
-    if      (strtol(argv[3], &check, 10) == 1)  strcpy(situacao, "Provao_crescente.txt");  //Crescente
-    else if (strtol(argv[3], &check, 10) == 2)  strcpy(situacao, "Provao_decrescente.txt");//Decrescente
-    else                                        strcpy(situacao, "Provao_aleatorio.txt");  //Aleatorio
+    if      (strtol(argv[3], &check, 10) == 1)  strcpy(situacao, "Provao_crescente.bin");  //Crescente
+    else if (strtol(argv[3], &check, 10) == 2)  strcpy(situacao, "Provao_decrescente.bin");//Decrescente
+    else                                        strcpy(situacao, "Provao_aleatorio.bin");  //Aleatorio
     if (*check != '\0') return 1;
 
     if (argc == 6) opt = true;
 
-    FILE *arqProvao = fopen(situacao, "r");
+    FILE *arqProvao = fopen(situacao, "rb");
     if (!arqProvao) {printf("Leitura do arquivo (PROVAO.TXT) falhou\n"); return 1;}
-
-    char *nomeArqProvaBin = NULL;
-    FILE *arqProvaoBin = transformaBin(arqProvao, nomeArqProvaBin);
-    if (!arqProvaoBin) {printf("Não foi possivel transformar o arquivo em bin\n"); return 1;}
-
-    
 
     Analise analisador;
     inicializaAnalise(&analisador);
 
     if (metodo == 1){
-        realizaIntercalacaoBalanceada2f(&analisador, arqProvaoBin, quantidade, opt);
+        realizaIntercalacaoBalanceada2f(&analisador, arqProvao, quantidade, opt);
         printf("======== Intercalacao Balanceada 2f ========\n\n");
     }
     if (metodo == 2){
-        realizaIntercalacaoBalanceadaf1(&analisador, arqProvaoBin, quantidade, opt);
+        realizaIntercalacaoBalanceadaf1(&analisador, arqProvao, quantidade, opt);
         printf("======== Intercalacao Balanceada f + 1 ========\n\n");
     }
     if (metodo == 3){
-        realizaQuicksort(&analisador, nomeArqProvaBin, quantidade, opt);
+        realizaQuicksort(&analisador, situacao, quantidade, opt);
         printf("======== QuickSort ========\n\n");
     }
 
@@ -65,12 +59,6 @@ int main(int argc, char *argv[]){
     printf("- Numero de transferencias (Leitura): %ld\n", analisador.transferenciasLeituras);
     printf("- Numero de comparacoes (Escritas): %ld\n", analisador.transferenciasEscritas);
 
-    fclose(arqProvaoBin);
-    return 0;
-}
-
-FILE * transformaBin(FILE *arqProvao, char *nomeArqProvaoBin){
-
     fclose(arqProvao);
-    return NULL;
+    return 0;
 }
