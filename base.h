@@ -8,7 +8,7 @@
 typedef struct{
     long int inscricao;
     float nota;
-    char informacoes[83];
+    char informacoes[85];
 } Aluno;
 
 typedef struct analise{

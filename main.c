@@ -3,19 +3,21 @@
 #include "metodo_quicksort.h"
 #include "base.h"
 
+#define TAMPAGINA 100
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
 
-FILE * transformaBin(FILE *arqProvao, char *nomeArqProvaoBin);
+void imprimeQuantidadeOrdenada(char *situacao, int quantidade);
 
 int main(int argc, char *argv[]){
     double tempoDeExecucao;
     //Verificação de comandos no console
     char *check;
 
-    if (argc < 5){printf("Comando no console incompleto\n");  return 1;}
+    if (argc < 4){printf("Comando no console incompleto\n");  return 1;}
     bool opt;
 
     int metodo =     strtol(argv[1], &check, 10); //Métodos: [1]Intercalação Balanceada 2f [2]Intercalação Balanceada F+1 [3]Quicksort
@@ -30,7 +32,7 @@ int main(int argc, char *argv[]){
     else                                        strcpy(situacao, "Provao_aleatorio.bin");  //Aleatorio
     if (*check != '\0') return 1;
 
-    if (argc == 6) opt = true;
+    if (argc == 5) {opt = true; printf("opt ativo\n");}
 
     FILE *arqProvao = fopen(situacao, "rb");
     if (!arqProvao) {printf("Leitura do arquivo (PROVAO.TXT) falhou\n"); return 1;}
@@ -53,6 +55,8 @@ int main(int argc, char *argv[]){
 
     tempoDeExecucao = (analisador.fim.tv_sec - analisador.inicio.tv_sec) + (analisador.fim.tv_nsec - analisador.inicio.tv_nsec)/ 1e9; //Tempo total de execução do método escolhido
     
+    imprimeQuantidadeOrdenada(situacao, quantidade);
+
     //Analise dos métodos
     printf("- Tempo de execucao: %.9f\n", tempoDeExecucao);
     printf("- Numero de comparacoes: %ld\n", analisador.comparacoes);
@@ -61,4 +65,21 @@ int main(int argc, char *argv[]){
 
     fclose(arqProvao);
     return 0;
+}
+
+void imprimeQuantidadeOrdenada(char *situacao, int quantidade){
+    FILE *arqBin = fopen(situacao, "rb");
+    FILE *arqTxt = fopen("ordenado.txt", "w");
+    Aluno aux[TAMPAGINA];
+    int resto = quantidade % TAMPAGINA;
+    int cont = 0;
+    while (quantidade > (cont += fread(aux, sizeof(Aluno), 100, arqBin))){
+        for (int i=0;i<TAMPAGINA;i++)
+            fprintf(arqTxt, "%8ld %5.1f %84s\n", aux[i].inscricao, aux[i].nota, aux[i].informacoes);
+        cont++;
+    }
+    for (int i=0; i<resto; i++)
+        fprintf(arqTxt, "%8ld %5.1f %84s\n", aux[i].inscricao, aux[i].nota, aux[i].informacoes);
+    fclose(arqBin);
+    fclose(arqTxt);
 }

@@ -18,7 +18,7 @@ void Particao(FILE **arqLi, FILE **arqEi, FILE ** arqLEs, TipoArea area,int esq,
 void LeSup(FILE **arqLs, Aluno *ultLido, int *Ls, bool *ondeLer, Analise *analisador);
 void LeInf(FILE **arqLi, Aluno *ultLido, int *Li, bool *ondeLer, Analise *analisador);
 
-void inserirArea(Aluno *ultLido, TipoArea *area);
+void inserirArea(Aluno *ultLido, TipoArea *area, Analise *analisador);
 
 void retiraMin(TipoArea *area, Aluno *retirado);
 void retiraMax(TipoArea *area, Aluno *retirado);
@@ -92,7 +92,7 @@ void Particao(FILE **arqLi, FILE **arqEi, FILE ** arqLEs, TipoArea area,int esq,
             else
                 LeInf(arqLi, &ultLido, &Li, &ondeLer, analisador);
 
-            inserirArea(&ultLido, &area);
+            inserirArea(&ultLido, &area, analisador);
             continue;
         }
 
@@ -107,26 +107,24 @@ void Particao(FILE **arqLi, FILE **arqEi, FILE ** arqLEs, TipoArea area,int esq,
             LeInf(arqLi, &ultLido, &Li, &ondeLer, analisador);
         
         if (ultLido.nota < Linf){ //Elemento abaixo do limite inferior
-            escreveMin(&ultLido, arqEi, &Ei, analisador);
             *i = Ei;
+            escreveMin(&ultLido, arqEi, &Ei, analisador);
         }
         else if (ultLido.nota > Lsup){ //Elemento acima do limite inferior
-            escreveMax(&ultLido, arqLEs, &Es, analisador);
             *j = Es;
+            escreveMax(&ultLido, arqLEs, &Es, analisador);
         }
         else{ //Elemento dentro do limite inferior e superior
-            inserirArea(&ultLido, &area);
+            inserirArea(&ultLido, &area, analisador);
             if ((Ei-esq) < (dir-Es)){ //T1 < T2
                 retiraMin(&area, &retirado);
                 escreveMin(&retirado, arqEi, &Ei, analisador);
-                Lsup = retirado.nota;
-                *j = Es;
+                Linf = retirado.nota;
             }
             else{ //T2 <= T1
                 retiraMax(&area, &retirado);
                 escreveMax(&retirado, arqLEs, &Es, analisador);
-                Linf = retirado.nota;
-                *i = Ei;
+                Lsup = retirado.nota;
             }
         }   
     }
@@ -153,12 +151,16 @@ void LeInf(FILE **arqLi, Aluno *ultLido, int *Li, bool *ondeLer, Analise *analis
 }
 
 //Insere o item de forma ordenada na memória principal (area)
-void inserirArea(Aluno *ultLido, TipoArea *area){
+void inserirArea(Aluno *ultLido, TipoArea *area, Analise *analisador){
     int i = area->numAlunosArea;
-    while (i > 0 && area->alunos[i-1].nota > ultLido->nota){
-        //colocar as comparações aqui
-        area->alunos[i] = area->alunos[i-1];
-        i--;
+    while (i > 0){
+        analisador->comparacoes++;
+        if (area->alunos[i-1].nota > ultLido->nota){
+            area->alunos[i] = area->alunos[i-1];
+            i--;
+            continue;
+        }
+        break;
     }
     area->alunos[i] = *ultLido;
     area->numAlunosArea++;
@@ -167,7 +169,7 @@ void inserirArea(Aluno *ultLido, TipoArea *area){
 //Retira o menor item da memória principal (area)
 void retiraMin(TipoArea *area, Aluno *retirado){
     *retirado = area->alunos[0];
-    for (int i = 0; i < area->numAlunosArea; i++)
+    for (int i = 0; i < area->numAlunosArea-1; i++)
     area->alunos[i] = area->alunos[i+1];
     area->numAlunosArea--;
 }
