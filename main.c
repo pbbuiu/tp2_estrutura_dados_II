@@ -3,14 +3,13 @@
 #include "metodo_quicksort.h"
 #include "base.h"
 
-#define TAMPAGINA 100
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
 
-void imprimeQuantidadeOrdenada(char *situacao, int quantidade);
+void imprimeQuantidadeOrdenada(char *situacao, int quantidade, int opt);
 
 int main(int argc, char *argv[]){
     double tempoDeExecucao;
@@ -18,7 +17,7 @@ int main(int argc, char *argv[]){
     char *check;
 
     if (argc < 4){printf("Comando no console incompleto\n");  return 1;}
-    bool opt;
+    bool opt = false;
 
     int metodo =     strtol(argv[1], &check, 10); //Métodos: [1]Intercalação Balanceada 2f [2]Intercalação Balanceada F+1 [3]Quicksort
     if (*check != '\0') {printf("Metodo invalido\n"); return 1;}
@@ -55,7 +54,7 @@ int main(int argc, char *argv[]){
 
     tempoDeExecucao = (analisador.fim.tv_sec - analisador.inicio.tv_sec) + (analisador.fim.tv_nsec - analisador.inicio.tv_nsec)/ 1e9; //Tempo total de execução do método escolhido
     
-    imprimeQuantidadeOrdenada(situacao, quantidade);
+    imprimeQuantidadeOrdenada(situacao, quantidade, opt);
 
     //Analise dos métodos
     printf("- Tempo de execucao: %.9f\n", tempoDeExecucao);
@@ -67,19 +66,20 @@ int main(int argc, char *argv[]){
     return 0;
 }
 
-void imprimeQuantidadeOrdenada(char *situacao, int quantidade){
+void imprimeQuantidadeOrdenada(char *situacao, int quantidade, int opt){
     FILE *arqBin = fopen(situacao, "rb");
     FILE *arqTxt = fopen("ordenado.txt", "w");
-    Aluno aux[TAMPAGINA];
-    int resto = quantidade % TAMPAGINA;
-    int cont = 0;
-    while (quantidade > (cont += fread(aux, sizeof(Aluno), 100, arqBin))){
-        for (int i=0;i<TAMPAGINA;i++)
-            fprintf(arqTxt, "%8ld %5.1f %84s\n", aux[i].inscricao, aux[i].nota, aux[i].informacoes);
-        cont++;
-    }
-    for (int i=0; i<resto; i++)
+
+    Aluno *aux = (Aluno*) malloc (quantidade * sizeof(Aluno));
+
+    if (fread(aux, sizeof(Aluno), quantidade, arqBin) != quantidade)
+        printf("Erro na criação do arquivo ordenado.txt");
+    
+    for (int i=0;i<quantidade;i++){
         fprintf(arqTxt, "%8ld %5.1f %84s\n", aux[i].inscricao, aux[i].nota, aux[i].informacoes);
+        if (opt)
+            printf("%8ld %5.1f %84s\n", aux[i].inscricao, aux[i].nota, aux[i].informacoes);
+    }
     fclose(arqBin);
     fclose(arqTxt);
 }
