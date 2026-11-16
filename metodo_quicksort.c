@@ -35,6 +35,10 @@ void realizaQuicksort(Analise *analisador, char *nomeArquivo, int quantidade, bo
     FILE *Ei = fopen (nomeArquivo, "rb+");
     FILE *LEs = fopen (nomeArquivo, "rb+");
     
+    setbuf(Li, NULL);
+    setbuf(Ei, NULL);
+    setbuf(LEs, NULL);
+
     QuickSort(&Li, &Ei, &LEs, 1, quantidade, analisador);
     
     fclose(Li);
