@@ -1,27 +1,8 @@
 #include "metodo_int_balanceada_f1.h"
 
-
-
 #include <stdlib.h>
-// heap e fitas 
-#define F 19
-#define TOTAL_FITAS 20
-#define MARCADOR -1
-#define SAIDA 19 //indice da fita de saida, a ultima fita é a de saida
-#define LARGURA 101  
-
-// Constantes para verificar se aluno lido é valido.
-#define ALUNO      1    // leu um aluno de verdade
-#define FIM_BLOCO  0    // leu o marcador -1
-#define FIM_FITA  -1
-
-typedef struct {
-    Aluno alunos[F];
-    bool marcado[F];
-    int tamanho; 
-}Heap;
-
-static bool vemAntes(Heap *h, int x, int y, Analise *a) {
+//================================FUNCOES DO HEAP========================================
+bool vemAntesK(Heap *h, int x, int y, Analise *a) {
     //Regra de ordenação, o sem marca tem prioridade, sobre o marcado
     if (h->marcado[x] != h->marcado[y]) {   
         if (h->marcado[x] == false)
@@ -38,7 +19,7 @@ static bool vemAntes(Heap *h, int x, int y, Analise *a) {
         return false;       // y tem nota menor ou igual, y vem antes
 }
 
-static void troca(Heap *h, int x, int y) {
+void trocaK(Heap *h, int x, int y) {
     Aluno auxA = h->alunos[x];
     h->alunos[x] = h->alunos[y];
     h->alunos[y] = auxA;
@@ -50,47 +31,81 @@ static void troca(Heap *h, int x, int y) {
     h->marcado[y] = auxM;
 }
 
-static void heapRefaz(Heap *h, int i, Analise *a){
+void heapRefazK(Heap *h, int i, Analise *a){
     while(true){
         int menor =i;
         int esq = 2*i + 1;
         int dir = 2*i + 2;
 
         if (esq < h->tamanho){//filho da esquerda existe e é menor
-            if(vemAntes(h,esq,menor,a))
+            if(vemAntesK(h,esq,menor,a))
                 menor= esq;
         }
 
         if(dir < h->tamanho){//filho da direita existe e é menor
-            if(vemAntes(h,dir,menor,a))
+            if(vemAntesK(h,dir,menor,a))
                 menor= dir;
         }
 
         if(menor == i)//se o menor for o proprio i, quer dizer que ele ja esta na posicao correta, entao sai do loop
             return;
     
-        troca(h,i, menor);   
+        trocaK(h,i, menor);   
         i= menor;
     }
 }
-static void heapConstroi(Heap *h, Analise *a){//constroi o heap inicial
+
+void heapConstroiK(Heap *h, Analise *a){//constroi o heap inicial
     int ultimoPai = h->tamanho /2 - 1;
     for(int i= ultimoPai; i>=0; i--){
-        heapRefaz(h,i,a);
+        heapRefazK(h,i,a);
     }
 }
 
-static void escreveRegistro(Aluno *aluno, FILE *arq, Analise *a){//escreve um registro no arquivo e atualiza a trasnferencia de escrita
+//================================FUNCOES DA FITA========================================
+
+void escreveRegistro(Aluno *aluno, FILE *arq, Analise *a){//escreve um registro no arquivo e atualiza a trasnferencia de escrita
     fwrite(aluno,sizeof(Aluno),1,arq);
     a->transferenciasEscritas++;
 }
-static void escreveFimDeBloco(FILE *arq){//escreve o marcador de fim de bloco no arquivo
+
+void escreveFimDeBloco(FILE *arq){//escreve o marcador de fim de bloco no arquivo
     Aluno marcadorDeFim = {0};//cria um registro de aluno com todos os campos zerados
     marcadorDeFim.nota = MARCADOR;//marca o campo nota com o valor do marcador
     fwrite(&marcadorDeFim,sizeof(Aluno),1,arq);
 }
 
-static int geraBlocos (FILE *arqProvao, FILE *fitas[], int quantidade, Analise *a){//gera o primeiro bloco no heap da "memoria interna"
+bool reabreFita(FILE *fitas[], int i) {//esvazia a fita i e reabre ela para escrita e leitura.
+    
+    char nome[20];
+    sprintf(nome, "fita%02d.bin", i);
+
+    fclose(fitas[i]);
+    fitas[i] = fopen(nome, "wb+");
+
+    if (fitas[i] == NULL) {
+        printf("Erro ao reabrir a fita %s\n", nome);
+        return false;
+    }
+    return true;
+}
+
+int leProximo(FILE *fita, Aluno *aluno, Analise *a) {
+    if(fread(aluno, sizeof(Aluno), 1, fita) == 0) {
+        return FIM_FITA; // fim da fita
+    }
+
+    if(aluno->nota == MARCADOR){
+        return FIM_BLOCO; // fim do bloco
+    }
+
+    a->transferenciasLeituras++;
+    return ALUNO; // aluno válido
+}
+
+//================================MANIPULACAO DAS FITAS E BLOCOS GERAR/INTERCALAR/REDISTRIBUIR========================================
+
+int geraBlocos (FILE *arqProvao, FILE *fitas[], int quantidade, Analise *a){//gera o primeiro bloco no heap da "memoria interna"
     Heap h;//gera o heap
     h.tamanho=0;    
     int lidos=0;  //quantos alunos ja foram lidos.
@@ -105,7 +120,7 @@ static int geraBlocos (FILE *arqProvao, FILE *fitas[], int quantidade, Analise *
         lidos++;
     }
 
-    heapConstroi(&h, a);//constroi o heap inicial ja ordenado
+    heapConstroiK(&h, a);//constroi o heap inicial ja ordenado
     
     int fitaAtual=0; //indice da fita atual
     int numBlocos=0; //quantidade de blocos gerados
@@ -147,7 +162,7 @@ static int geraBlocos (FILE *arqProvao, FILE *fitas[], int quantidade, Analise *
             h.marcado[0]=h.marcado[h.tamanho];
         }
 
-        heapRefaz(&h,0,a);//refaz o heap
+        heapRefazK(&h,0,a);//refaz o heap
     }
 
     if (lidos > 0) {
@@ -158,20 +173,7 @@ static int geraBlocos (FILE *arqProvao, FILE *fitas[], int quantidade, Analise *
     return numBlocos;
 }
 
-static int leProximo(FILE *fita, Aluno *aluno, Analise *a) {
-    if(fread(aluno, sizeof(Aluno), 1, fita) == 0) {
-        return FIM_FITA; // fim da fita
-    }
-
-    if(aluno->nota == MARCADOR){
-        return FIM_BLOCO; // fim do bloco
-    }
-
-    a->transferenciasLeituras++;
-    return ALUNO; // aluno válido
-}
-
-static bool intercalaBloco(FILE *fitas[], Analise *a){//se retornar true, ainda há blocos a serem intercalados, se retornar false, todas as fitas estão vazias
+bool intercalaBloco(FILE *fitas[], Analise *a){//se retornar true, ainda há blocos a serem intercalados, se retornar false, todas as fitas estão vazias
     Aluno atual[F]; // array para armazenar os alunos lidos de cada fita
     bool ativa[F];// array para indicar se a fita ainda tem alunos válidos
     int ativas=0; // contador de fitas ativas
@@ -221,22 +223,7 @@ static bool intercalaBloco(FILE *fitas[], Analise *a){//se retornar true, ainda 
     return true; // ainda há blocos a serem intercalados
 }
 
-static bool reabreFita(FILE *fitas[], int i) {//esvazia a fita i e reabre ela para escrita e leitura.
-    
-    char nome[20];
-    sprintf(nome, "fita%02d.bin", i);
-
-    fclose(fitas[i]);
-    fitas[i] = fopen(nome, "wb+");
-
-    if (fitas[i] == NULL) {
-        printf("Erro ao reabrir a fita %s\n", nome);
-        return false;
-    }
-    return true;
-}
-
-static int Passada(FILE *fitas[], Analise *a) {
+int Passada(FILE *fitas[], Analise *a) {
 
     for(int i=0; i<F; i++){
         rewind(fitas[i]); // volta para o início de cada fita
@@ -252,7 +239,7 @@ static int Passada(FILE *fitas[], Analise *a) {
     return blocosSaida;//retorna quantos blocos foram pra saida;
 }
 
-static void redistribuiFitas(FILE *fitas[], Analise *a) {//redistribui os blocos da fita de saída para as fitas de entrada
+void redistribuiFitas(FILE *fitas[], Analise *a) {//redistribui os blocos da fita de saída para as fitas de entrada
     
     for(int i =0; i<F ; i++){
         reabreFita(fitas, i); // limpa mtodas as fitas de entrada e reabre para escrita e leitura
@@ -280,7 +267,7 @@ static void redistribuiFitas(FILE *fitas[], Analise *a) {//redistribui os blocos
 
 }
 
-static void copiaFita(FILE *origem, FILE *arqProvao) {//copia o conteudo da fita de origem para a fita de destino
+void copiaFita(FILE *origem, FILE *arqProvao) {//copia o conteudo da fita de origem para a fita de destino
     rewind(origem);
     rewind(arqProvao);
 
@@ -294,18 +281,20 @@ static void copiaFita(FILE *origem, FILE *arqProvao) {//copia o conteudo da fita
     fflush(arqProvao); //forcar a gravar no arquivo 
     }
 
-static void imprimeBorda() {
+//================================IMPRESSAO=====================================================
+
+void imprimeBorda() {
     printf("+");
     for (int i = 0; i < LARGURA; i++)
         printf("-");
     printf("+\n");
 }
 
-static void imprimeLinha(char *texto) {
+void imprimeLinha(char *texto) {
     printf("| %-99s |\n", texto);
 }
 
-static void imprimeAlunos(FILE *arq, int quantidade, char *titulo) {
+void imprimeAlunos(FILE *arq, int quantidade, char *titulo) {
     rewind(arq);
     Aluno aluno;
 
@@ -321,6 +310,8 @@ static void imprimeAlunos(FILE *arq, int quantidade, char *titulo) {
 
     imprimeBorda();
 }
+
+//================================FUNCAO PRINCIPAL=====================================================
 
 void realizaIntercalacaoBalanceadaf1(Analise *a, FILE *arqProvao, int quantidade, bool opt){
 
