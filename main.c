@@ -31,10 +31,10 @@ int main(int argc, char *argv[]){
     else                                        strcpy(situacao, "Provao_aleatorio.bin");  //Aleatorio
     if (*check != '\0') return 1;
 
-    if (argc == 5) {opt = true; printf("opt ativo\n");}
+    if (argc == 5) opt = true;
 
-    FILE *arqProvao = fopen(situacao, "rb");
-    if (!arqProvao) {printf("Leitura do arquivo (PROVAO.TXT) falhou\n"); return 1;}
+    FILE *arqProvao = fopen(situacao, "rb+");
+    if (!arqProvao) {printf("Leitura do arquivo (%s) falhou\n", situacao); return 1;}
 
     Analise analisador;
     inicializaAnalise(&analisador);
@@ -60,7 +60,7 @@ int main(int argc, char *argv[]){
     printf("- Tempo de execucao: %.9f\n", tempoDeExecucao);
     printf("- Numero de comparacoes: %ld\n", analisador.comparacoes);
     printf("- Numero de transferencias (Leitura): %ld\n", analisador.transferenciasLeituras);
-    printf("- Numero de comparacoes (Escritas): %ld\n", analisador.transferenciasEscritas);
+    printf("- Numero de transferencias (Escritas): %ld\n", analisador.transferenciasEscritas);
 
     fclose(arqProvao);
     return 0;
