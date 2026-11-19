@@ -1,6 +1,0 @@
-metodo,cod_situacao,situacao,quantidade,tempo_execucao,comparacoes,transferencias_leitura,transferencias_escrita
-Quicksort Externo,1,Crescente,100,-,-,-,-
-Quicksort Externo,1,Crescente,200,-,-,-,-
-Quicksort Externo,1,Crescente,2000,-,-,-,-
-Quicksort Externo,1,Crescente,20000,-,-,-,-
-Quicksort Externo,1,Crescente,200000,-,-,-,-

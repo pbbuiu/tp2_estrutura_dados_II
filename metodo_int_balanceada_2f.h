@@ -27,10 +27,10 @@ typedef struct{
     Aluno alu;
     bool mar;
     int arq;
-} Heap;
+} Heap2;
 
 typedef struct{
-    Heap cel[10];
+    Heap2 cel[10];
     int qnt;
 } Mem_Int; //Memoria interna
 
@@ -38,11 +38,11 @@ void realizaIntercalacaoBalanceada2f(Analise *a, FILE * arqProvao, int quantidad
 void InicializadorFitas(ArqFitas *arq);
 void DestruirFitas(ArqFitas *arq, bool opc, bool fim);
 void ReabrirFitas(ArqFitas *arq, bool opc);
-void IniciaHeap(Mem_Int *mem, Pagina *ent);
-void IniciaHeap2(Mem_Int *mem);
+void IniciaHeap(Mem_Int *mem, Pagina *ent, Analise *a);
+void IniciaHeap2(Mem_Int *mem, Analise *a);
 void OrganizaHeap(Mem_Int *mem, int ind, Analise *a);
 void TrocaHeap(Mem_Int *mem, int ind, int eoud);
-void RemoverHeap(Mem_Int *mem);
+void RemoverHeap(Mem_Int *mem, Analise *a);
 
 #endif //INTERCALACAO_BALANCEADA_2F_H
 
