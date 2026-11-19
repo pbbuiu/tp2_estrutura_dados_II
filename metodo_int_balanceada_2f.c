@@ -1,5 +1,4 @@
 #include "metodo_int_balanceada_2f.h"
-#include "metodo_int_balanceada_f1.h"
 
 void InicializadorFitas(ArqFitas *arq)
 {
@@ -62,13 +61,6 @@ void realizaIntercalacaoBalanceada2f(Analise *a, FILE * arqProvao, int quantidad
         return;
     }
 
-    if(opt == true) //IMPLEMENTAR ISSO DIREITO
-    {
-        printf("\n\n");
-        imprimeAlunos(arqProvao, quantidade, "ALUNOS ANTES DA ORDENACAO");
-        rewind(arqProvao);
-    }
-
     ArqFitas arq;
     Pagina entrada[10], saida;
     int arqatual = 0;
@@ -83,9 +75,11 @@ void realizaIntercalacaoBalanceada2f(Analise *a, FILE * arqProvao, int quantidad
     saida.qntlida = qnt_pagina;
 
     entrada[0].qntlida = fread(entrada[0].v, sizeof(Aluno), qnt_pagina, arqProvao);
+    if(entrada[0].qntlida > quantidade)
+        entrada[0].qntlida = quantidade;
     a->transferenciasLeituras++;
     Mem_Int memoria;
-    IniciaHeap(&memoria, &entrada[0]);
+    IniciaHeap(&memoria, &entrada[0], a);
 
     for (long int i = 10; i < quantidade; i++, entrada[0].ind++)
     {
@@ -112,7 +106,7 @@ void realizaIntercalacaoBalanceada2f(Analise *a, FILE * arqProvao, int quantidad
             memoria.cel[0].mar = true;
         }
         memoria.cel[0].alu = entrada[0].v[entrada[0].ind];
-        OrganizaHeap(&memoria, 0);
+        OrganizaHeap(&memoria, 0, a);
         if(saida.ind == saida.qntlida || memoria.cel[0].mar)
         {
             fwrite(saida.v, sizeof(Aluno), saida.ind, arq.Fitas[arqatual]);
@@ -145,7 +139,7 @@ void realizaIntercalacaoBalanceada2f(Analise *a, FILE * arqProvao, int quantidad
 
         saida.v[saida.ind] = memoria.cel[0].alu;
         saida.ind++;
-        RemoverHeap(&memoria);
+        RemoverHeap(&memoria, a);
     }
     if(saida.ind > 0)
     {
@@ -175,7 +169,7 @@ void realizaIntercalacaoBalanceada2f(Analise *a, FILE * arqProvao, int quantidad
                 memoria.cel[memoria.qnt].arq = i;
                 memoria.qnt++;
             }
-            IniciaHeap2(&memoria);
+            IniciaHeap2(&memoria, a);
             ReabrirFitas(&arq, lado);
             arqatual = 0;
             for(long int i = 0; i < quantidade; i++)
@@ -203,7 +197,7 @@ void realizaIntercalacaoBalanceada2f(Analise *a, FILE * arqProvao, int quantidad
                     a->transferenciasLeituras++;
                     if(!entrada[memoria.cel->arq].qntlida)
                     {
-                        RemoverHeap(&memoria);
+                        RemoverHeap(&memoria, a);
                         continue;
                     }
                 }
@@ -214,7 +208,7 @@ void realizaIntercalacaoBalanceada2f(Analise *a, FILE * arqProvao, int quantidad
                 }
                 memoria.cel[0].alu = entrada[memoria.cel->arq].v[entrada[memoria.cel->arq].ind];
                 entrada[memoria.cel->arq].ind++;
-                OrganizaHeap(&memoria, 0);
+                OrganizaHeap(&memoria, 0, a);
             }
             DestruirFitas(&arq, lado, false);
             lado = false;
@@ -235,7 +229,7 @@ void realizaIntercalacaoBalanceada2f(Analise *a, FILE * arqProvao, int quantidad
                 memoria.cel[memoria.qnt].arq = i + 10;
                 memoria.qnt++;
             }
-            IniciaHeap2(&memoria);
+            IniciaHeap2(&memoria, a);
             ReabrirFitas(&arq, lado);
             arqatual = 0;
             for(long int i = 0; i < quantidade; i++)
@@ -263,7 +257,7 @@ void realizaIntercalacaoBalanceada2f(Analise *a, FILE * arqProvao, int quantidad
                     a->transferenciasLeituras++;
                     if(!entrada[(memoria.cel->arq % 10)].qntlida)
                     {
-                        RemoverHeap(&memoria);
+                        RemoverHeap(&memoria, a);
                         continue;
                     }
                 }
@@ -274,7 +268,7 @@ void realizaIntercalacaoBalanceada2f(Analise *a, FILE * arqProvao, int quantidad
                 }
                 memoria.cel[0].alu = entrada[(memoria.cel->arq % 10)].v[entrada[(memoria.cel->arq % 10)].ind];
                 entrada[(memoria.cel->arq % 10)].ind++;
-                OrganizaHeap(&memoria, 0);
+                OrganizaHeap(&memoria, 0, a);
             }
             DestruirFitas(&arq, lado, false);
             lado = true;
@@ -295,43 +289,27 @@ void realizaIntercalacaoBalanceada2f(Analise *a, FILE * arqProvao, int quantidad
     else
         fclose(arq.Fitas[10]);
     DestruirFitas(&arq, lado, true);
-    clock_gettime(CLOCK_MONOTONIC, &a->fim);
+
+    clock_gettime(CLOCK_MONOTONIC, &a->fim); //Não contabilizo leitura e escrita pois foi finalizada a intercalação, a proxima parte é só para facilitar a vizualização do resultado
+
     if(!lado)
     {
         arq.Fitas[10] = fopen(arq.nomearq[10], "rb");
         while((entrada[0].qntlida = fread(entrada[0].v, sizeof(Aluno), qnt_pagina, arq.Fitas[10])))
-        {
-            a->transferenciasLeituras++;
             fwrite(entrada[0].v, sizeof(Aluno), entrada[0].qntlida, arqProvao);
-            a->transferenciasEscritas++;
-        }
-        a->transferenciasLeituras++;
         fclose(arq.Fitas[10]);
     }
     else
     {
         arq.Fitas[0] = fopen(arq.nomearq[0], "rb");
         while((entrada[0].qntlida = fread(entrada[0].v, sizeof(Aluno), qnt_pagina, arq.Fitas[0])))
-        {
-            a->transferenciasLeituras++;
             fwrite(entrada[0].v, sizeof(Aluno), entrada[0].qntlida, arqProvao);
-            a->transferenciasEscritas++;
-        }
-        a->transferenciasLeituras++;
         fclose(arq.Fitas[0]);
     }
-   
     rewind(arqProvao);
-    
-    if(opt == true){ //IMPLEMENTAR ISSO DIREITO
-        printf("\n\n");
-        imprimeAlunos(arqProvao, quantidade, "ALUNOS DEPOIS DA ORDENACAO");
-        printf("\n\n");
-    }
-    //INFORMAÇÕES 
 }
 
-void IniciaHeap(Mem_Int *mem, Pagina *ent)
+void IniciaHeap(Mem_Int *mem, Pagina *ent, Analise *a)
 {
     if (ent->qntlida >= 10)
         mem->qnt = 10;
@@ -344,16 +322,16 @@ void IniciaHeap(Mem_Int *mem, Pagina *ent)
     }
     int ult_pai = (mem->qnt / 2) - 1;
     for(int i = ult_pai; i >= 0; i--)
-        OrganizaHeap(mem, i);
+        OrganizaHeap(mem, i, a);
 }
 
-void IniciaHeap2(Mem_Int *mem)
+void IniciaHeap2(Mem_Int *mem, Analise *a)
 {
     for(int i = 0; i < mem->qnt; i++)
         mem->cel[i].mar = false;
     int ult_pai = (mem->qnt / 2) - 1;
     for(int i = ult_pai; i >= 0; i--)
-        OrganizaHeap(mem, i);
+        OrganizaHeap(mem, i, a);
 }
 
 void OrganizaHeap(Mem_Int *mem, int ind, Analise *a)
@@ -368,22 +346,17 @@ void OrganizaHeap(Mem_Int *mem, int ind, Analise *a)
         if(mem->cel[ind].alu.nota > mem->cel[esq].alu.nota)
         {
             if((mem->cel[ind].mar == false) && (mem->cel[esq].mar == true))
-            {
-                a->comparacoes++;
                 return;
-            }
             TrocaHeap(mem, ind, esq);
         }
         else if((mem->cel[ind].mar == true) && (mem->cel[esq].mar == false))
             TrocaHeap(mem, ind, esq);
-        a->comparacoes++;
         return;
     }
     int menor;
     a->comparacoes++;
     if(mem->cel[esq].alu.nota > mem->cel[dir].alu.nota)
     {
-        a->comparacoes++;
         if((mem->cel[esq].mar == false) && (mem->cel[dir].mar == true))
             menor = esq;
         else
@@ -391,7 +364,6 @@ void OrganizaHeap(Mem_Int *mem, int ind, Analise *a)
     }
     else
     {
-        a->comparacoes++;
         if((mem->cel[dir].mar == false) && (mem->cel[esq].mar == true))
             menor = dir;
         else
@@ -400,22 +372,19 @@ void OrganizaHeap(Mem_Int *mem, int ind, Analise *a)
     a->comparacoes++;
     if(mem->cel[ind].alu.nota > mem->cel[menor].alu.nota)
     {
-        a->comparacoes++;
         if((mem->cel[ind].mar == false) && (mem->cel[menor].mar == true))
             return;
         else
         {
-            a->comparacoes--; //tem que ser 2 no total, não 3
             TrocaHeap(mem, ind, menor);
-            OrganizaHeap(mem, menor);
+            OrganizaHeap(mem, menor, a);
         }
     }
     else if((mem->cel[ind].mar == true) && (mem->cel[menor].mar == false))
     {
         TrocaHeap(mem, ind, menor);
-        OrganizaHeap(mem, menor);
+        OrganizaHeap(mem, menor, a);
     }
-    a->comparacoes++;
 }
 
 void TrocaHeap(Mem_Int *mem, int ind, int eoud) //esq ou dir
@@ -426,9 +395,9 @@ void TrocaHeap(Mem_Int *mem, int ind, int eoud) //esq ou dir
     mem->cel[eoud] = aux;
 }
 
-void RemoverHeap(Mem_Int *mem)
+void RemoverHeap(Mem_Int *mem, Analise *a)
 {
     mem->cel[0] = mem->cel[(mem->qnt - 1)];
     mem->qnt--;
-    OrganizaHeap(mem, 0);
+    OrganizaHeap(mem, 0, a);
 }
