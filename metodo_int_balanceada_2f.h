@@ -40,7 +40,7 @@ void DestruirFitas(ArqFitas *arq, bool opc, bool fim);
 void ReabrirFitas(ArqFitas *arq, bool opc);
 void IniciaHeap(Mem_Int *mem, Pagina *ent);
 void IniciaHeap2(Mem_Int *mem);
-void OrganizaHeap(Mem_Int *mem, int ind);
+void OrganizaHeap(Mem_Int *mem, int ind, Analise *a);
 void TrocaHeap(Mem_Int *mem, int ind, int eoud);
 void RemoverHeap(Mem_Int *mem);
 
