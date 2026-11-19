@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 
-void realizaQuicksort(Analise *a, char *nomeArquivo, int quantidade, bool opt);
+void realizaQuicksort(Analise *a, char *nomeArquivo, int quantidade);
 
 #endif //QUICKSORT_H
 

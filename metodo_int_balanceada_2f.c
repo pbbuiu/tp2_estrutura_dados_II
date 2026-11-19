@@ -47,7 +47,7 @@ void ReabrirFitas(ArqFitas *arq, bool opc)
     }
 }
 
-void realizaIntercalacaoBalanceada2f(Analise *a, FILE * arqProvao, int quantidade, bool opt)
+void realizaIntercalacaoBalanceada2f(Analise *a, FILE * arqProvao, int quantidade)
 {
     if (!a || !arqProvao)
     {

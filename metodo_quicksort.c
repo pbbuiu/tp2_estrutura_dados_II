@@ -27,7 +27,7 @@ void escreveMin(Aluno *escrito, FILE **arqEi, int *Ei, Analise *analisador);
 void escreveMax(Aluno *escrito, FILE **arqEs, int *Es, Analise *analisador);
 
 //Função chamada pela main para realização da ordenação aplicando o método do QuickSort
-void realizaQuicksort(Analise *analisador, char *nomeArquivo, int quantidade, bool opt){
+void realizaQuicksort(Analise *analisador, char *nomeArquivo, int quantidade){
     //Gera os ponteiros que irão se locomover através dos arquivos
     clock_gettime(CLOCK_MONOTONIC, &analisador->inicio); //Tempo de início
 

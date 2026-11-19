@@ -34,7 +34,7 @@ typedef struct{
     int qnt;
 } Mem_Int; //Memoria interna
 
-void realizaIntercalacaoBalanceada2f(Analise *a, FILE * arqProvao, int quantidade, bool opt);
+void realizaIntercalacaoBalanceada2f(Analise *a, FILE * arqProvao, int quantidade);
 void InicializadorFitas(ArqFitas *arq);
 void DestruirFitas(ArqFitas *arq, bool opc, bool fim);
 void ReabrirFitas(ArqFitas *arq, bool opc);

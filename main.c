@@ -40,7 +40,7 @@ int main(int argc, char *argv[]){
     inicializaAnalise(&analisador);
 
     if (metodo == 1){
-        realizaIntercalacaoBalanceada2f(&analisador, arqProvao, quantidade, opt);
+        realizaIntercalacaoBalanceada2f(&analisador, arqProvao, quantidade);
         printf("======== Intercalacao Balanceada 2f ========\n\n");
     }
     if (metodo == 2){
@@ -48,7 +48,7 @@ int main(int argc, char *argv[]){
         printf("======== Intercalacao Balanceada f + 1 ========\n\n");
     }
     if (metodo == 3){
-        realizaQuicksort(&analisador, situacao, quantidade, opt);
+        realizaQuicksort(&analisador, situacao, quantidade);
         printf("======== QuickSort ========\n\n");
     }
 
@@ -72,7 +72,7 @@ void imprimeQuantidadeOrdenada(char *situacao, int quantidade, int opt){
 
     Aluno *aux = (Aluno*) malloc (quantidade * sizeof(Aluno));
 
-    if (fread(aux, sizeof(Aluno), quantidade, arqBin) != quantidade)
+    if (fread(aux, sizeof(Aluno), quantidade, arqBin) != (size_t)quantidade)
         printf("Erro na criação do arquivo ordenado.txt");
     
     for (int i=0;i<quantidade;i++){
